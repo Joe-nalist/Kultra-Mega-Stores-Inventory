@@ -76,9 +76,8 @@ The dataset contains information on Kultra Mega Stores (KMS), headquartered in *
 
 ### 🧾 SQL Analysis
 
-Key queries performed include:
+#### Key queries performed include:
 - Which product category had the highest sales?
-- What are the Top 3 and Bottom 3 regions in terms of sales?
 
 ```sql 
 SELECT TOP 1
@@ -88,13 +87,80 @@ SELECT TOP 1
   GROUP BY product_category
   ORDER BY total_sales DESC;
 
- 
+```
+
+- What are the Top 3 and Bottom 3 regions in terms of sales?
+  
+```sql
 SELECT TOP 3
-    product_category,
+    Region,
     SUM(sales) AS total_sales
 FROM [KMS Sql case Study]
-GROUP BY product_category
+GROUP BY Region
 ORDER BY total_sales DESC;
+
+
+SELECT TOP 3
+    Region,
+    SUM(sales) AS total_sales
+FROM [KMS Sql case Study]
+GROUP BY Region
+ORDER BY total_sales ASC;
+```
+
+- What were the total sales of appliances in Ontario?
+
+```sql
+SELECT 
+    SUM(sales) AS total_sales
+FROM [KMS Sql case Study]
+WHERE product_sub_category = 'Appliances' AND Province = 'Ontario';
+```
+
+- Advise the management of KMS on what to do to increase the revenue from the bottom 10 customers
+  
+→ After analyzing sales data from the bottom 10 customers, it's evident that they contribute minimally due to low purchase frequency and    small average order values. To increase revenue from this segment, we recommend:
+
+- Introducing personalized promotions and loyalty programs
+
+- Upselling complementary or higher-margin products
+
+- Direct engagement to understand barriers to larger purchases
+
+```sql
+SELECT TOP 10
+    customer_name,
+    SUM(sales) AS total_revenue
+FROM [KMS Sql case Study]
+GROUP BY customer_name
+ORDER BY total_revenue ASC;
+
+
+SELECT 
+    customer_name, 
+    COUNT(*) AS number_of_purchases,
+    SUM(sales) AS total_spent
+FROM [KMS Sql case Study]
+WHERE customer_name IN (
+    SELECT TOP 10 customer_name
+    FROM [KMS Sql case Study]
+    GROUP BY customer_name
+    ORDER BY SUM(sales) ASC
+)
+GROUP BY customer_name;
+```
+
+- KMS incurred the most shipping cost using which shipping method?
+
+```sql
+SELECT TOP 1
+    ship_mode,
+    SUM(shipping_cost) AS total_shipping_cost
+FROM [KMS Sql case Study]
+GROUP BY ship_mode
+ORDER BY total_shipping_cost DESC;
+```
+
 
 
 
