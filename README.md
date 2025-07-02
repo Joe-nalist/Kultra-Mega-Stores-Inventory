@@ -161,6 +161,102 @@ GROUP BY ship_mode
 ORDER BY total_shipping_cost DESC;
 ```
 
+- Who are the most valuable customers, and what products or services do they typically purchase?
+
+```sql
+SELECT TOP 10
+    customer_name,
+    SUM(sales) AS total_spent
+FROM [KMS Sql case Study]
+GROUP BY customer_name
+ORDER BY total_spent DESC;
 
 
 
+SELECT 
+    customer_name,
+    product_category,
+    COUNT(*) AS times_purchased,
+    SUM(sales) AS total_spent_on_item
+FROM [KMS Sql case Study]
+WHERE customer_name IN (
+    SELECT TOP 10 customer_name
+    FROM [KMS Sql case Study]
+    GROUP BY customer_name
+    ORDER BY SUM(sales) DESC
+)
+GROUP BY customer_name, product_category
+ORDER BY customer_name, total_spent_on_item DESC;
+```
+
+- Which small business customer had the highest sales?
+
+```sql
+SELECT TOP 1
+    customer_name,
+    SUM(sales) AS total_sales
+FROM [KMS Sql case Study]
+WHERE customer_segment = 'Small Business'
+GROUP BY customer_name
+ORDER BY total_sales DESC;
+```
+
+- Which Corporate Customer placed the most number of orders in 2009 – 2012?
+
+```sql
+SELECT TOP 1
+    customer_name,
+    COUNT(*) AS number_of_orders
+FROM [KMS Sql case Study]
+WHERE customer_segment= 'Corporate'
+  AND YEAR(order_date) BETWEEN 2009 AND 2012
+GROUP BY customer_name
+ORDER BY number_of_orders DESC;
+```
+
+- Which consumer customer was the most profi table one?
+
+```sql
+SELECT TOP 1
+    customer_name,
+    SUM(profit) AS total_profit
+FROM [KMS Sql case Study]
+WHERE customer_segment = 'Consumer'
+GROUP BY customer_name
+ORDER BY total_profit DESC;
+```
+
+- Which customer returned items, and what segment do they belong to?
+
+ → Got customers who returned items, inferred by negative profit, and showed:
+
+- Customer Name
+- Customer Segment
+- Number of returned items (rows)
+
+```sql
+SELECT 
+    [Customer_Name],
+    [Customer_Segment],
+    COUNT(*) AS [Returned Items Count]
+FROM [KMS Sql case Study]
+WHERE [Profit] < 0
+GROUP BY [Customer_Name], [Customer_Segment]
+ORDER BY [Returned Items Count] DESC;
+```
+
+- If the delivery truck is the most economical but the slowest shipping method and Express Air is the fastest but the most expensive one, do you think the company appropriately spent shipping costs based on the Order Priority? Explain your answer
+
+ → Based on the analysis, KMS did not always align shipping method with order priority. In several cases, low-priority orders were           shipped using Express Air, incurring high costs unnecessarily. Conversely, some high-priority orders were delivered using Delivery        Truck, which may delay critical deliveries. This indicates an opportunity to optimize logistics policy by enforcing stricter alignment    between shipping urgency and cost.
+
+```sql
+SELECT 
+    [Order_Priority],
+    [Ship_Mode],
+    COUNT(*) AS Order_Count,
+    SUM([Shipping_Cost]) AS Total_Shipping_Cost,
+    AVG([Shipping_Cost]) AS Avg_Shipping_Cost
+FROM [KMS Sql case Study]
+GROUP BY [Order_Priority], [Ship_Mode]
+ORDER BY [Order_Priority], Avg_Shipping_Cost DESC;
+```
