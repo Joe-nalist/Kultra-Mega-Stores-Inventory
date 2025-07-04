@@ -100,6 +100,7 @@ GROUP BY Region
 ORDER BY total_sales DESC;
 
 
+
 SELECT TOP 3
     Region,
     SUM(sales) AS total_sales
